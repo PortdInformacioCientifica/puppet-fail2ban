@@ -2,30 +2,50 @@
 # THIS FILE IS MANAGED BY PUPPET
 # <%= file %>
 #
+# WARNING: heavily refactored in 0.9.0 release.  Please review and
+#          customize settings for your setup.
+#
+# Changes:  in most of the cases you should not modify this
+#           file, but provide customizations in jail.local file,
+#           or separate .conf files under jail.d/ directory, e.g.:
+#
+# HOW TO ACTIVATE JAILS:
+#
+# YOU SHOULD NOT MODIFY THIS FILE.
+#
+# It will probably be overwritten or improved in a distribution update.
+#
+# Provide customizations in a jail.local file or a jail.d/customisation.local.
+# For example to change the default bantime for all jails and to enable the
+# ssh-iptables jail the following (uncommented) would appear in the .local file.
+# See man 5 jail.conf for details.
+#
+# [DEFAULT]
+# bantime = 3600
+#
+# [sshd]
+# enabled = true
+#
+# See jail.conf(5) man page for more information
 
-# Fail2Ban configuration file.
-#
-# This file was composed for Debian systems from the original one
-# provided now under /usr/share/doc/fail2ban/examples/jail.conf
-# for additional examples.
-#
-# Comments: use '#' for comment lines and ';' for inline comments
-#
-# To avoid merges during upgrades DO NOT MODIFY THIS FILE
-# and rather provide your changes in /etc/fail2ban/jail.local
-#
 
-# The DEFAULT allows a global definition of the options. They can be overridden
-# in each jail afterwards.
+
+# Comments: use '#' for comment lines and ';' (following a space) for inline comments
+
 
 [INCLUDES]
 
+#before = paths-distro.conf
 before = paths-fedora.conf
 
 # The DEFAULT allows a global definition of the options. They can be overridden
 # in each jail afterwards.
 
 [DEFAULT]
+
+#
+# MISCELLANEOUS OPTIONS
+#
 
 # "ignoreip" can be an IP address, a CIDR mask or a DNS host. Fail2ban will not
 # ban a host which matches an address in this list. Several addresses can be
@@ -43,27 +63,37 @@ bantime  = <%= scope['::fail2ban::bantime'] %>
 
 # A host is banned if it has generated "maxretry" during the last "findtime"
 # seconds.
-findtime = 600
+findtime  = 600
+
+# "maxretry" is the number of failures before a host get banned.
 maxretry = <%= scope['::fail2ban::maxretry'] %>
 
 # "backend" specifies the backend used to get files modification.
-# Available options are "pyinotify", "gamin", "polling" and "auto".
+# Available options are "pyinotify", "gamin", "polling", "systemd" and "auto".
 # This option can be overridden in each jail as well.
 #
 # pyinotify: requires pyinotify (a file alteration monitor) to be installed.
-#            If pyinotify is not installed, Fail2ban will use auto.
+#              If pyinotify is not installed, Fail2ban will use auto.
 # gamin:     requires Gamin (a file alteration monitor) to be installed.
-#            If Gamin is not installed, Fail2ban will use auto.
+#              If Gamin is not installed, Fail2ban will use auto.
 # polling:   uses a polling algorithm which does not require external libraries.
+# systemd:   uses systemd python library to access the systemd journal.
+#              Specifying "logpath" is not valid for this backend.
+#              See "journalmatch" in the jails associated filter config
 # auto:      will try to use the following backends, in order:
-#            pyinotify, gamin, polling.
+#              pyinotify, gamin, polling.
+#
+# Note: if systemd backend is choses as the default but you enable a jail
+#       for which logs are present only in its own log files, specify some other
+#       backend for that jail (e.g. polling) and provide empty value for
+#       journalmatch. See https://github.com/fail2ban/fail2ban/issues/959#issuecomment-74901200
 backend = auto
 
 # "usedns" specifies if jails should trust hostnames in logs,
-#   warn when reverse DNS lookups are performed, or ignore all hostnames in logs
+#   warn when DNS lookups are performed, or ignore all hostnames in logs
 #
-# yes:   if a hostname is encountered, a reverse DNS lookup will be performed.
-# warn:  if a hostname is encountered, a reverse DNS lookup will be performed,
+# yes:   if a hostname is encountered, a DNS lookup will be performed.
+# warn:  if a hostname is encountered, a DNS lookup will be performed,
 #        but it will be logged as a warning.
 # no:    if a hostname is encountered, will not be used for banning,
 #        but it will be logged as info.
@@ -90,30 +120,23 @@ enabled = false
 #
 filter = %(__name__)s
 
+
 #
 # ACTIONS
 #
 
+# Some options used for actions
+
 # Destination email address used solely for the interpolations in
-# jail.{conf,local} configuration files.
+# jail.{conf,local,d/*} configuration files.
 destemail = <%= scope['::fail2ban::email'] %>
 
-#
-# Name of the sender for mta actions
-sendername = Fail2Ban
-
-# Email address of the sender
+# Sender email address used solely for some actions
 sender = <%= scope['::fail2ban::sender'] %>
 
-# Default banning action (e.g. iptables, iptables-new,
-# iptables-multiport, shorewall, etc) It is used to define
-# action_* variables. Can be overridden globally or per
-# section within jail.local file
-banaction = <%= scope['::fail2ban::banaction'] %>
-
-# email action. Since 0.8.1 upstream fail2ban uses sendmail
-# MTA for the mailing. Change mta configuration parameter to mail
-# if you want to revert to conventional 'mail'.
+# E-mail action. Since 0.8.1 Fail2Ban uses sendmail MTA for the
+# mailing. Change mta configuration parameter to mail if you want to
+# revert to conventional 'mail'.
 mta = sendmail
 
 # Default protocol
@@ -122,15 +145,25 @@ protocol = tcp
 # Specify chain where jumps would need to be added in iptables-* actions
 chain = <%= scope['::fail2ban::iptables_chain'] %>
 
+# Ports to be banned
+# Usually should be overridden in a particular jail
+port = 0:65535
+
 #
 # Action shortcuts. To be used to define action parameter
+
+# Default banning action (e.g. iptables, iptables-new,
+# iptables-multiport, shorewall, etc) It is used to define
+# action_* variables. Can be overridden globally or per
+# section within jail.local file
+banaction = <%= scope['::fail2ban::banaction'] %>
 
 # The simplest action to take: ban only
 action_ = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
 
 # ban & send an e-mail with buffered report to the destemail.
-action_mb = %(banaction)s[name=%(__name__)s, port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
-            %(mta)s-buffered[name=%(__name__)s, dest="%(destemail)s", protocol="%(protocol)s", chain="%(chain)s", sendername="%(sendername)s"]
+action_mb = %(banaction)s[name=%(__name__)s, port="%(port)s", protocol="%(protocol)s"]
+            %(mta)s-buffered[name=%(__name__)s, dest="%(destemail)s", protocol="%(protocol)s"]
 
 # ban & send an e-mail with whois report to the destemail.
 action_mw = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
@@ -148,10 +181,6 @@ action_mwl = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(por
 action_xarf = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
              xarf-login-attack[service=%(__name__)s, sender="%(sender)s", logpath=%(logpath)s, port="%(port)s"]
 
-# ban IP on CloudFlare & send an e-mail with whois report and relevant log lines
-# to the destemail.
-action_cf_mwl = cloudflare[cfuser="%(cfemail)s", cftoken="%(cfapikey)s"]
-                %(mta)s-whois-lines[name=%(__name__)s, dest="%(destemail)s", logpath=%(logpath)s, chain="%(chain)s"]
 
 # Report block via blocklist.de fail2ban reporting service API
 #
@@ -177,6 +206,7 @@ action_badips = badips.py[category="%(name)s", banaction="%(banaction)s"]
 # globally (section [DEFAULT]) or per specific section
 action = %(<%= scope['::fail2ban::action'] %>)s
 
+
 #
 # JAILS
 #
@@ -187,28 +217,33 @@ action = %(<%= scope['::fail2ban::action'] %>)s
 
 [sshd]
 enabled = <%= scope['::fail2ban::jails'].include? "ssh" %>
-port    = <%= scope['::fail2ban::jail_ports'].key?('ssh') ? scope['::fail2ban::jail_ports']['sshd'] : 'ssh' %>
+port    = <%= scope['::fail2ban::jail_ports'].key?('sshd') ? scope['::fail2ban::jail_ports']['sshd'] : 'ssh' %>
+filter  = sshd
 logpath = %(sshd_log)s
 
 
 [sshd-ddos]
 # This jail corresponds to the standard configuration in Fail2ban.
 # The mail-whois action send a notification e-mail with a whois request
-# in the body.
-enabled = <%= scope['::fail2ban::jails'].include? "sshd-ddos" %>
-port    = <%= scope['::fail2ban::jail_ports'].key?('ssh') ? scope['::fail2ban::jail_ports']['ssh'] : 'ssh' %>
+# in the boidy.
+enabled = <%= scope['::fail2ban::jails'].include? "ssh-ddos" %>
+port    = <%= scope['::fail2ban::jail_ports'].key?('sshd-ddos') ? scope['::fail2ban::jail_ports']['sshd-ddos'] : 'ssh' %>
+filter  = sshd
 logpath = %(sshd_log)s
 
 
 [dropbear]
 enabled = <%= scope['::fail2ban::jails'].include? "dropbear" %>
 port    = <%= scope['::fail2ban::jail_ports'].key?('dropbear') ? scope['::fail2ban::jail_ports']['dropbear'] : 'ssh' %>
+port     = ssh
+filter   = sshd
 logpath  = %(dropbear_log)s
 
 
 [selinux-ssh]
 enabled = <%= scope['::fail2ban::jails'].include? "selinux-ssh" %>
 port    = <%= scope['::fail2ban::jail_ports'].key?('selinux-ssh') ? scope['::fail2ban::jail_ports']['selinux-ssh'] : 'ssh' %>
+filter   = sshd
 logpath  = %(auditd_log)s
 maxretry = 5
 
@@ -226,7 +261,7 @@ logpath  = %(apache_error_log)s
 [apache-badbots]
 # Ban hosts which agent identifies spammer robots crawling the web
 # for email addresses. The mail outputs are buffered.
-enabled = <%= scope['::fail2ban::jails'].include? "apache-badbots" %>
+# enabled = <%= scope['::fail2ban::jails'].include? "apache-badbots" %>
 port     = <%= scope['::fail2ban::jail_ports'].key?('apache-badbots') ? scope['::fail2ban::jail_ports']['apache-badbots'] : 'http,https' %>
 logpath  = %(apache_access_log)s
 bantime  = 172800
@@ -310,9 +345,9 @@ logpath = %(suhosin_log)s
 
 
 [lighttpd-auth]
-enabled = <%= scope['::fail2ban::jails'].include? "lighttpd-auth" %>
 # Same as above for Apache's mod_auth
 # It catches wrong authentifications
+enabled = <%= scope['::fail2ban::jails'].include? "lighttpd-auth" %>
 port    = <%= scope['::fail2ban::jail_ports'].key?('lighttpd-auth') ? scope['::fail2ban::jail_ports']['lighttpd-auth'] : 'http,https' %>
 logpath = %(lighttpd_error_log)s
 
@@ -324,7 +359,7 @@ logpath = %(lighttpd_error_log)s
 [roundcube-auth]
 enabled = <%= scope['::fail2ban::jails'].include? "roundcube-auth" %>
 port     = <%= scope['::fail2ban::jail_ports'].key?('roundcube-auth') ? scope['::fail2ban::jail_ports']['roundcube-auth'] : 'http,https' %>
-logpath  = logpath = %(roundcube_errors_log)s
+logpath  = /var/log/roundcube/userlogins
 
 
 [openwebmail]
@@ -346,10 +381,10 @@ logpath  = /home/groupoffice/log/info.log
 
 
 [sogo-auth]
-enabled = <%= scope['::fail2ban::jails'].include? "sogo-auth" %>
 # Monitor SOGo groupware server
 # without proxy this would be:
 # port    = 20000
+enabled = <%= scope['::fail2ban::jails'].include? "sogo-auth" %>
 port     = <%= scope['::fail2ban::jail_ports'].key?('sogo-auth') ? scope['::fail2ban::jail_ports']['sogo-auth'] : 'http,https' %>
 logpath  = /var/log/sogo/sogo.log
 
@@ -390,12 +425,6 @@ port    = <%= scope['::fail2ban::jail_ports'].key?('webmin-auth') ? scope['::fai
 logpath = %(syslog_authpriv)s
 
 
-[froxlor-auth]
-enabled = <%= scope['::fail2ban::jails'].include? "froxlor-auth" %>
-port    = <%= scope['::fail2ban::jail_ports'].key?('froxlor-auth') ? scope['::fail2ban::jail_ports']['froxlor-auth'] : 'http,https' %>
-logpath  = %(syslog_authpriv)s
-
-
 #
 # HTTP Proxy servers
 #
@@ -411,7 +440,6 @@ logpath = /var/log/squid/access.log
 enabled = <%= scope['::fail2ban::jails'].include? "3proxy" %>
 port    = <%= scope['::fail2ban::jail_ports'].key?('3proxy') ? scope['::fail2ban::jail_ports']['3proxy'] : '3128' %>
 logpath = /var/log/3proxy.log
-
 
 #
 # FTP servers
@@ -479,7 +507,7 @@ logpath  = %(postfix_log)s
 
 
 [postfix-rbl]
-enabled  = <%= scope['::fail2ban::jails'].include? "postfix-rbl" %>
+enabled = <%= scope['::fail2ban::jails'].include? "postfix-rbl" %>
 port     = <%= scope['::fail2ban::jail_ports'].key?('postfix-rbl') ? scope['::fail2ban::jail_ports']['postfix-rbl'] : 'smtp,465,submission' %>
 logpath  = %(syslog_mail)s
 maxretry = 1
@@ -569,7 +597,7 @@ logpath = %(syslog_mail)s
 
 
 [squirrelmail]
-enabled = <%= scope['::fail2ban::jails'].include? "squierrelmail" %>
+enabled = <%= scope['::fail2ban::jails'].include? "squirrelmail" %>
 port = <%= scope['::fail2ban::jail_ports'].key?('squirrelmail') ? scope['::fail2ban::jail_ports']['squirrelmail'] : 'smtp,465,submission,imap2,imap3,imaps,pop3,pop3s,http,https,socks' %>
 logpath = /var/lib/squirrelmail/prefs/squirrelmail_access_log
 
@@ -677,7 +705,7 @@ maxretry = 5
 #    to maintain entries for failed logins for sufficient amount of time
 [recidive]
 enabled = <%= scope['::fail2ban::jails'].include? "recidive" %>
-logpath  = /var/log/fail2ban.log
+logpath  = /var/log/messages
 banaction = iptables-allports
 bantime  = 604800  ; 1 week
 findtime = 86400   ; 1 day
@@ -688,8 +716,8 @@ maxretry = 5
 # ports such as iptables-allports, shorewall
 
 [pam-generic]
-enabled = <%= scope['::fail2ban::jails'].include? "pam-generic" %>
 # pam-generic filter can be customized to monitor specific subset of 'tty's
+enabled = <%= scope['::fail2ban::jails'].include? "pam-generic" %>
 banaction = iptables-allports
 logpath  = %(syslog_authpriv)s
 
@@ -709,7 +737,7 @@ logpath = /var/log/stunnel4/stunnel.log
 
 [ejabberd-auth]
 enabled = <%= scope['::fail2ban::jails'].include? "ejabberd-auth" %>
-port    = <%= scope['::fail2ban::jail_ports'].key?('ejabberd-auth') ? scope['::fail2ban::jail_ports']['ejabberd-auth'] : '5222' %>
+port    = 5222
 logpath = /var/log/ejabberd/ejabberd.log
 
 
@@ -718,7 +746,7 @@ enabled = <%= scope['::fail2ban::jails'].include? "counter-strike" %>
 logpath = /opt/cstrike/logs/L[0-9]*.log
 # Firewall: http://www.cstrike-planet.com/faq/6
 # CAUTION: variable jail_ports would only ban TCP ports
-tcpport = <%= scope['::fail2ban::jail_ports'].key?('counter-strike') ? scope['::fail2ban::jail_ports']['counter-strike'] : '27030,27031,27032,27033,27034,27035,27036,27037,27038,27039' %>
+tcpport = <%= scope['::fail2ban::jail_ports'].key?('counter-strike') ? scope['::fail2ban::jail_ports']['counter-strike'] : '27030,27031,27032,27033,27034,27035 ,27036,27037,27038,27039' %>
 udpport = 1200,27000,27001,27002,27003,27004,27005,27006,27007,27008,27009,27010,27011,27012,27013,27014,27015
 action  = %(banaction)s[name=%(__name__)s-tcp, port="%(tcpport)s", protocol="tcp", chain="%(chain)s", actname=%(banaction)s-tcp]
            %(banaction)s[name=%(__name__)s-udp, port="%(udpport)s", protocol="udp", chain="%(chain)s", actname=%(banaction)s-udp]
@@ -744,20 +772,6 @@ logpath = /var/log/directadmin/login.log
 port = <%= scope['::fail2ban::jail_ports'].key?('directadmin') ? scope['::fail2ban::jail_ports']['directadmin'] : '2222' %>
 
 [portsentry]
-enabled  = <%= scope['::fail2ban::jails'].include? "portsentry" %>
+enabled = <%= scope['::fail2ban::jails'].include? "portsentry" %>
 logpath  = /var/lib/portsentry/portsentry.history
 maxretry = 1
-
-[pass2allow-ftp]
-# this pass2allow example allows FTP traffic after successful HTTP authentication
-enabled      = <%= scope['::fail2ban::jails'].include? "pass2allow-ftp" %>
-port         = <%= scope['::fail2ban::jail_ports'].key?('pass2allow-ftp') ? scope['::fail2ban::jail_ports']['pass2allow-ftp'] : 'ftp,ftp-data,ftps,ftps-data' %>
-# knocking_url variable must be overridden to some secret value in filter.d/apache-pass.local
-filter       = apache-pass
-# access log of the website with HTTP auth
-logpath      = %(apache_access_log)s
-blocktype    = RETURN
-returntype   = DROP
-bantime      = 3600
-maxretry     = 1
-findtime     = 1

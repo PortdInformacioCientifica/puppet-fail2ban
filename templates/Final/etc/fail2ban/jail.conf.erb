@@ -187,7 +187,7 @@ action = %(<%= scope['::fail2ban::action'] %>)s
 
 [sshd]
 enabled = <%= scope['::fail2ban::jails'].include? "ssh" %>
-port    = <%= scope['::fail2ban::jail_ports'].key?('ssh') ? scope['::fail2ban::jail_ports']['sshd'] : 'ssh' %>
+port    = <%= scope['::fail2ban::jail_ports'].key?('ssh') ? scope['::fail2ban::jail_ports']['ssh'] : 'ssh' %>
 logpath = %(sshd_log)s
 
 

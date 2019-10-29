@@ -132,7 +132,7 @@ describe 'fail2ban' do
       it 'is_expected.to work with no errors' do
         pp = <<-EOS
           class { 'fail2ban':
-            config_file_template => "fail2ban/#{fact('lsbdistcodename')}/#{config_file_path}.epp",
+            config_file_template => "fail2ban/#{fact('lsbdistcodename')}/#{config_file_path}.erb",
           }
         EOS
 
@@ -150,7 +150,7 @@ describe 'fail2ban' do
       it 'is_expected.to work with no errors' do
         pp = <<-EOS
           class { 'fail2ban':
-            config_file_template => "fail2ban/#{fact('lsbdistcodename')}/#{config_file_path}.epp",
+            config_file_template => "fail2ban/#{fact('lsbdistcodename')}/#{config_file_path}.erb",
 	    iptables_chain => 'TEST',
           }
         EOS
@@ -169,7 +169,7 @@ describe 'fail2ban' do
       it 'is_expected.to work with no errors' do
         pp = <<-EOS
           class { 'fail2ban':
-            config_file_template => "fail2ban/#{fact('lsbdistcodename')}/#{config_file_path}.epp",
+            config_file_template => "fail2ban/#{fact('lsbdistcodename')}/#{config_file_path}.erb",
             banaction            => 'iptables'
           }
         EOS
@@ -180,23 +180,6 @@ describe 'fail2ban' do
       describe file(config_file_path) do
         it { is_expected.to be_file }
         it { is_expected.to contain %r{^banaction = iptables$} }
-      end
-    end
-
-    context 'when content template and custom sender' do
-      it 'is_expected.to work with no errors' do
-        pp = <<-EOS
-          class { 'fail2ban':
-            config_file_template => "fail2ban/#{fact('lsbdistcodename')}/#{config_file_path}.epp",
-            sender => 'custom-sender@example.com',
-          }
-        EOS
-
-        apply_manifest(pp, catch_failures: true)
-      end
-
-      describe file(config_file_path) do
-        it { is_expected.to contain %r{^sender = custom-sender@example\.com$} }
       end
     end
   end

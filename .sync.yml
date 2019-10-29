@@ -7,4 +7,3 @@
     - set: debian8-64
     - set: debian9-64
     - set: ubuntu1604-64
-    - set: ubuntu1804-64

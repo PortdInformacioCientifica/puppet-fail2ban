@@ -136,16 +136,26 @@ action = %(<%= $fail2ban::action %>)s
 
 [ssh]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "ssh" in $fail2ban::jails %>
 port     = ssh
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "ssh" %>
+port    = <%= scope['::fail2ban::jail_ports'].key?('ssh') ? scope['::fail2ban::jail_ports']['ssh'] : 'ssh' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter   = sshd
 logpath  = /var/log/auth.log
 maxretry = 6
 
 [dropbear]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "dropbear" in $fail2ban::jails %>
 port     = ssh
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "dropbear" %>
+port    = <%= scope['::fail2ban::jail_ports'].key?('dropbear') ? scope['::fail2ban::jail_ports']['dropbear'] : 'ssh' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter   = dropbear
 logpath  = /var/log/auth.log
 maxretry = 6
@@ -176,8 +186,13 @@ maxretry  = 2
 
 [ssh-ddos]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "ssh-ddos" in $fail2ban::jails %>
 port     = ssh
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "ssh-ddos" %>
+port     = <%= scope['::fail2ban::jail_ports'].key?('sshd-ddos') ? scope['::fail2ban::jail_ports']['sshd-ddos'] : 'ssh' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter   = sshd-ddos
 logpath  = /var/log/auth.log
 maxretry = 6
@@ -201,8 +216,13 @@ maxretry = 6
 # requires the ipset package and kernel support.
 [ssh-iptables-ipset4]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "ssh-iptables-ipset4" in $fail2ban::jails %>
 port     = ssh
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "ssh-iptables-ipset4" %>
+port    = <%= scope['::fail2ban::jail_ports'].key?('ssh-iptables-ipset4') ? scope['::fail2ban::jail_ports']['ssh-iptables-ipset4'] : 'ssh' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter   = sshd
 banaction = iptables-ipset-proto4
 logpath  = /var/log/sshd.log
@@ -210,8 +230,13 @@ maxretry = 6
 
 [ssh-iptables-ipset6]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "ssh-iptables-ipset6" in $fail2ban::jails %>
 port     = ssh
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "ssh-iptables-ipset6" %>
+port    = <%= scope['::fail2ban::jail_ports'].key?('ssh-iptables-ipset6') ? scope['::fail2ban::jail_ports']['ssh-iptables-ipset6'] : 'ssh' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter   = sshd
 banaction = iptables-ipset-proto6
 logpath  = /var/log/sshd.log
@@ -224,8 +249,13 @@ maxretry = 6
 
 [apache]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "apache" in $fail2ban::jails %>
 port     = http,https
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "apache" %>
+port     = <%= scope['::fail2ban::jail_ports'].key?('apache') ? scope['::fail2ban::jail_ports']['apache'] : 'http,https' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter   = apache-auth
 logpath  = /var/log/apache*/*error.log
 maxretry = 6
@@ -234,24 +264,39 @@ maxretry = 6
 # for compatibility with previous (<0.7.6-2) releases
 [apache-multiport]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled   = <%= "apache-multiport" in $fail2ban::jails %>
 port      = http,https
+=======
+enabled   = <%= scope['::fail2ban::jails'].include? "apache-multiport" %>
+port     = <%= scope['::fail2ban::jail_ports'].key?('apache-multiport') ? scope['::fail2ban::jail_ports']['apache-multiport'] : 'http,https' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter    = apache-auth
 logpath   = /var/log/apache*/*error.log
 maxretry  = 6
 
 [apache-noscript]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "apache-noscript" in $fail2ban::jails %>
 port     = http,https
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "apache-noscript" %>
+port     = <%= scope['::fail2ban::jail_ports'].key?('apache-noscript') ? scope['::fail2ban::jail_ports']['apache-noscript'] : 'http,https' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter   = apache-noscript
 logpath  = /var/log/apache*/*error.log
 maxretry = 6
 
 [apache-overflows]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "apache-overflows" in $fail2ban::jails %>
 port     = http,https
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "apache-overflows" %>
+port     = <%= scope['::fail2ban::jail_ports'].key?('apache-overflows') ? scope['::fail2ban::jail_ports']['apache-overflows'] : 'http,https' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter   = apache-overflows
 logpath  = /var/log/apache*/*error.log
 maxretry = 2
@@ -260,7 +305,7 @@ maxretry = 2
 
 enabled  = <%= "apache-modsecurity" in $fail2ban::jails %>
 filter   = apache-modsecurity
-port     = http,https
+port     = <%= scope['::fail2ban::jail_ports'].key?('apache-modsecurity') ? scope['::fail2ban::jail_ports']['apache-modsecurity'] : 'http,https' %>
 logpath  = /var/log/apache*/*error.log
 maxretry = 2
 
@@ -268,7 +313,7 @@ maxretry = 2
 
 enabled  = <%= "apache-nohome" in $fail2ban::jails %>
 filter   = apache-nohome
-port     = http,https
+port     = <%= scope['::fail2ban::jail_ports'].key?('apache-nohome') ? scope['::fail2ban::jail_ports']['apache-nohome'] : 'http,https' %>
 logpath  = /var/log/apache*/*error.log
 maxretry = 2
 
@@ -278,8 +323,13 @@ maxretry = 2
 
 [php-url-fopen]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled = <%= "php-url-fopen" in $fail2ban::jails %>
 port    = http,https
+=======
+enabled = <%= scope['::fail2ban::jails'].include? "php-url-fopen" %>
+port    = <%= scope['::fail2ban::jail_ports'].key?('php-url-fopen') ? scope['::fail2ban::jail_ports']['php-url-fopen'] : 'http,https' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter  = php-url-fopen
 logpath = /var/www/*/logs/access_log
 
@@ -291,8 +341,13 @@ logpath = /var/www/*/logs/access_log
 
 [lighttpd-fastcgi]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled = <%= "lighttpd-fastcgi" in $fail2ban::jails %>
 port    = http,https
+=======
+enabled = <%= scope['::fail2ban::jails'].include? "lighttpd-fastcgi" %>
+port    = <%= scope['::fail2ban::jail_ports'].key?('lighttpd-fastcgi') ? scope['::fail2ban::jail_ports']['lighttpd-fastcgi'] : 'http,https' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter  = lighttpd-fastcgi
 logpath = /var/log/lighttpd/error.log
 
@@ -301,8 +356,13 @@ logpath = /var/log/lighttpd/error.log
 
 [lighttpd-auth]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled = <%= "lighttpd-auth" in $fail2ban::jails %>
 port    = http,https
+=======
+enabled = <%= scope['::fail2ban::jails'].include? "lighttpd-auth" %>
+port    = <%= scope['::fail2ban::jail_ports'].key?('lighttpd-auth') ? scope['::fail2ban::jail_ports']['lighttpd-auth'] : 'http,https' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter  = suhosin
 logpath = /var/log/lighttpd/error.log
 
@@ -310,15 +370,20 @@ logpath = /var/log/lighttpd/error.log
 
 enabled = <%= "nginx-http-auth" in $fail2ban::jails %>
 filter  = nginx-http-auth
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 port    = http,https
 logpath = /var/log/nginx/*error*.log
+=======
+port    = <%= scope['::fail2ban::jail_ports'].key?('nginx-http-auth') ? scope['::fail2ban::jail_ports']['nginx-http-auth'] : 'http,https' %>
+logpath = /var/log/nginx/error.log
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 
 # Monitor roundcube server
 [roundcube-auth]
 
 enabled  = <%= "roundcube-auth" in $fail2ban::jails %>
 filter   = roundcube-auth
-port     = http,https
+port     = <%= scope['::fail2ban::jail_ports'].key?('roundcube-auth') ? scope['::fail2ban::jail_ports']['roundcube-auth'] : 'http,https' %>
 logpath  = /var/log/roundcube/userlogins
 
 
@@ -326,7 +391,7 @@ logpath  = /var/log/roundcube/userlogins
 
 enabled  = <%= "sogo-auth" in $fail2ban::jails %>
 filter   = sogo-auth
-port     = http, https
+port     = <%= scope['::fail2ban::jail_ports'].key?('sogo-auth') ? scope['::fail2ban::jail_ports']['sogo-auth'] : 'http,https' %>
 # without proxy this would be:
 # port    = 20000
 logpath  = /var/log/sogo/sogo.log
@@ -338,8 +403,13 @@ logpath  = /var/log/sogo/sogo.log
 
 [vsftpd]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "vsftpd" in $fail2ban::jails %>
 port     = ftp,ftp-data,ftps,ftps-data
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "vsftpd" %>
+port     = <%= scope['::fail2ban::jail_ports'].key?('vsftpd') ? scope['::fail2ban::jail_ports']['vsftpd'] : 'ftp,ftp-data,ftps,ftps-data' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter   = vsftpd
 logpath  = /var/log/vsftpd.log
 # or overwrite it in jails.local to be
@@ -351,8 +421,13 @@ maxretry = 6
 
 [proftpd]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "proftpd" in $fail2ban::jails %>
 port     = ftp,ftp-data,ftps,ftps-data
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "proftpd" %>
+port     = <%= scope['::fail2ban::jail_ports'].key?('proftpd') ? scope['::fail2ban::jail_ports']['proftpd'] : 'ftp,ftp-data,ftps,ftps-data' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter   = proftpd
 logpath  = /var/log/proftpd/proftpd.log
 maxretry = 6
@@ -360,8 +435,13 @@ maxretry = 6
 
 [pure-ftpd]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "pure-ftpd" in $fail2ban::jails %>
 port     = ftp,ftp-data,ftps,ftps-data
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "pure-ftpd" %>
+port     = <%= scope['::fail2ban::jail_ports'].key?('pure-ftpd') ? scope['::fail2ban::jail_ports']['pure-ftpd'] : 'ftp,ftp-data,ftps,ftps-data' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter   = pure-ftpd
 logpath  = /var/log/syslog
 maxretry = 6
@@ -369,8 +449,13 @@ maxretry = 6
 
 [wuftpd]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "wuftpd" in $fail2ban::jails %>
 port     = ftp,ftp-data,ftps,ftps-data
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "wuftpd" %>
+port     = <%= scope['::fail2ban::jail_ports'].key?('wuftpd') ? scope['::fail2ban::jail_ports']['wuftpd'] : 'ftp,ftp-data,ftps,ftps-data' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter   = wuftpd
 logpath  = /var/log/syslog
 maxretry = 6
@@ -382,16 +467,26 @@ maxretry = 6
 
 [postfix]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "postfix" in $fail2ban::jails %>
 port     = smtp,ssmtp,submission
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "postfix" %>
+port     = <%= scope['::fail2ban::jail_ports'].key?('postfix') ? scope['::fail2ban::jail_ports']['postfix'] : 'smtp,ssmtp,submission' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter   = postfix
 logpath  = /var/log/mail.log
 
 
 [couriersmtp]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "couriersmtp" in $fail2ban::jails %>
 port     = smtp,ssmtp,submission
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "couriersmtp" %>
+port     = <%= scope['::fail2ban::jail_ports'].key?('courier-smtp') ? scope['::fail2ban::jail_ports']['courier-smtp'] : 'smtp,ssmtp,submission' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter   = couriersmtp
 logpath  = /var/log/mail.log
 
@@ -403,16 +498,26 @@ logpath  = /var/log/mail.log
 
 [courierauth]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "courierauth" in $fail2ban::jails %>
 port     = smtp,ssmtp,submission,imap2,imap3,imaps,pop3,pop3s
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "courierauth" %>
+port     = <%= scope['::fail2ban::jail_ports'].key?('courierauth') ? scope['::fail2ban::jail_ports']['courierauth'] : 'smtp,ssmtp,submission,imap3,imaps,pop3,pop3s' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter   = courierlogin
 logpath  = /var/log/mail.log
 
 
 [sasl]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "sasl" in $fail2ban::jails %>
 port     = smtp,ssmtp,submission,imap2,imap3,imaps,pop3,pop3s
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "sasl" %>
+port     = <%= scope['::fail2ban::jail_ports'].key?('postfix-sasl') ? scope['::fail2ban::jail_ports']['postfix-sasl'] : 'smtp,ssmtp,submission,imap3,imaps,pop3,pop3s' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 filter   = postfix-sasl
 # You might consider monitoring /var/log/mail.warn instead if you are
 # running postfix since it would provide the same log lines at the
@@ -423,6 +528,7 @@ logpath  = /var/log/mail.log
 
 enabled = <%= "dovecot" in $fail2ban::jails %>
 port    = smtp,ssmtp,submission,imap2,imap3,imaps,pop3,pop3s
+port    = <%= scope['::fail2ban::jail_ports'].key?('dovecot') ? scope['::fail2ban::jail_ports']['dovecot'] : 'smtp,ssmtp,submission,imap2,imap3,imaps,pop3,pop3s' %>
 filter  = dovecot
 logpath = /var/log/mail.log
 
@@ -433,7 +539,7 @@ logpath = /var/log/mail.log
 
 enabled  = <%= "mysqld-auth" in $fail2ban::jails %>
 filter   = mysqld-auth
-port     = 3306
+port     = <%= scope['::fail2ban::jail_ports'].key?('mysqld-auth') ? scope['::fail2ban::jail_ports']['mysqld-auth'] : '3306' %>
 logpath  = /var/log/mysqld.log
 
 
@@ -473,8 +579,13 @@ logpath  = /var/log/mysqld.log
 
 [named-refused-tcp]
 
+<<<<<<< HEAD:templates/jessie/etc/fail2ban/jail.conf.epp
 enabled  = <%= "named-refused-tcp" in $fail2ban::jails %>
 port     = domain,953
+=======
+enabled  = <%= scope['::fail2ban::jails'].include? "named-refused-tcp" %>
+port     = <%= scope['::fail2ban::jail_ports'].key?('named-refused-tcp') ? scope['::fail2ban::jail_ports']['named-refused-tcp'] : 'domain,953' %>
+>>>>>>> 07e0f63378a6bb748c700bff14bb49e3a30047ce:templates/Tikanga/etc/fail2ban/jail.conf.erb
 protocol = tcp
 filter   = named-refused
 logpath  = /var/log/named/security.log
@@ -485,14 +596,14 @@ enabled  = <%= "freeswitch" in $fail2ban::jails %>
 filter   = freeswitch
 logpath  = /var/log/freeswitch.log
 maxretry = 10
-action   = iptables-multiport[name=freeswitch-tcp, port="5060,5061,5080,5081", protocol=tcp]
-           iptables-multiport[name=freeswitch-udp, port="5060,5061,5080,5081", protocol=udp]
+action   = iptables-multiport[name=freeswitch-tcp, port="<%= scope['::fail2ban::jail_ports'].key?('freeswitch') ? scope['::fail2ban::jail_ports']['freeswitch'] : '5060,5061,5080,5081' %>" , protocol=tcp]
+           iptables-multiport[name=freeswitch-udp, port="<%= scope['::fail2ban::jail_ports'].key?('freeswitch') ? scope['::fail2ban::jail_ports']['freeswitch'] : '5060,5061,5080,5081' %>", protocol=udp]
 
 [ejabberd-auth]
 
 enabled  = <%= "ejabberd-auth" in $fail2ban::jails %>
 filter   = ejabberd-auth
-port     = xmpp-client
+port    = <%= scope['::fail2ban::jail_ports'].key?('ejabberd-auth') ? scope['::fail2ban::jail_ports']['ejabberd-auth'] : 'xmpp-client' %>
 protocol = tcp
 logpath  = /var/log/ejabberd/ejabberd.log
 
@@ -503,7 +614,7 @@ logpath  = /var/log/ejabberd/ejabberd.log
 
 enabled  = <%= "asterisk-tcp" in $fail2ban::jails %>
 filter   = asterisk
-port     = 5060,5061
+port     = <%= scope['::fail2ban::jail_ports'].key?('asterisk-tcp') ? scope['::fail2ban::jail_ports']['asterisk-tcp'] : '5060,5061' %>
 protocol = tcp
 logpath  = /var/log/asterisk/messages
 
@@ -511,7 +622,7 @@ logpath  = /var/log/asterisk/messages
 
 enabled  = <%= "asterisk-udp" in $fail2ban::jails %>
 filter	 = asterisk
-port     = 5060,5061
+port     = <%= scope['::fail2ban::jail_ports'].key?('asterisk-udp') ? scope['::fail2ban::jail_ports']['asterisk-udp'] : '5060,5061' %>
 protocol = udp
 logpath  = /var/log/asterisk/messages
 
@@ -541,7 +652,7 @@ maxretry = 5
 
 enabled  = <%= "ssh-blocklist" in $fail2ban::jails %>
 filter   = sshd
-action   = iptables[name=SSH, port=ssh, protocol=tcp]
+action   = iptables[name=SSH, port=<%= scope['::fail2ban::jail_ports'].key?('ssh-blocklist') ? scope['::fail2ban::jail_ports']['ssh-blocklist'] : 'ssh' %>, protocol=tcp]
            sendmail-whois[name=SSH, dest="%(destemail)s", sender="%(sender)s", sendername="%(sendername)s"]
            blocklist_de[email="%(sender)s", apikey="xxxxxx", service="%(filter)s"]
 logpath  = /var/log/sshd.log
@@ -553,7 +664,7 @@ maxretry = 20
 [nagios]
 enabled  = <%= "nagios" in $fail2ban::jails %>
 filter   = nagios
-action   = iptables[name=Nagios, port=5666, protocol=tcp]
+action   = iptables[name=Nagios, port=<%= scope['::fail2ban::jail_ports'].key?('nagios') ? scope['::fail2ban::jail_ports']['nagios'] : '5666' %>, protocol=tcp]
            sendmail-whois[name=Nagios, dest="%(destemail)s", sender="%(sender)s", sendername="%(sendername)s"]
 logpath  = /var/log/messages     ; nrpe.cfg may define a different log_facility
 maxretry = 1

@@ -281,6 +281,17 @@ port    = <%= scope['::fail2ban::jail_ports'].key?('apache-shellshock') ? scope[
 logpath = %(apache_error_log)s
 maxretry = 1
 
+[apache-get-dos]
+enabled = <%= scope['::fail2ban::jails'].include? "apache-get-dos" %>
+port    = <%= scope['::fail2ban::jail_ports'].key?('apache-get-dos') ? scope['::fail2ban::jail_ports']['apache-get-dos'] : 'http,https' %>
+filter = http-get-dos
+logpath =  %(apache_error_log)s
+maxretry = 300
+findtime = 300
+#ban for 5 minutes
+bantime = 600
+action = iptables[name=HTTP, port=http, protocol=tcp]
+
 [nginx-http-auth]
 enabled = <%= scope['::fail2ban::jails'].include? "nginx-http-auth" %>
 port    = <%= scope['::fail2ban::jail_ports'].key?('nginx-http-auth') ? scope['::fail2ban::jail_ports']['nginx-http-auth'] : 'http,https' %>
